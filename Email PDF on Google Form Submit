@@ -1,0 +1,65 @@
+function emailForm() {
+
+  //Sorts the Form Response 1 sheet so that the most recent input from the Google Form is at the top.
+
+  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1");
+  spreadsheet.getRange('A2:AJ').activate();
+  var currentCell = spreadsheet.getCurrentCell();
+  spreadsheet.getSelection().getNextDataRange(SpreadsheetApp.Direction.DOWN).activate();
+  currentCell.activateAsCurrentCell();
+  spreadsheet.getActiveRange().sort({column: 1, ascending: false});
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Qrtly Review Form");
+
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1").hideSheet();
+
+  
+  //Variables being taken from the sheet to create email format
+
+  var row = 4;
+  var col = 7;
+  var StaffName = ss.getRange(row, col).getValue();
+
+  var row4 = 8;
+  var col4 = 15;
+  var Date = ss.getRange(row4, col4).getValue();
+
+  var row5 = 6;
+  var col5 = 8;
+  var SupervisorName = ss.getRange(row5, col5).getValue();
+
+  var row6 = 7;
+  var col6 = 8;
+  var SupervisorEmail = ss.getRange(row6, col6).getValue();
+
+  var row7 = 5;
+  var col7 = 7;
+  var StaffEmail = ss.getRange(row7, col7).getValue();
+
+  var row8 = 8;
+  var col8 = 18;
+  var Month = ss.getRange(row8, col8).getValue();
+
+  var row9 = 8;
+  var col9 = 19;
+  var Day = ss.getRange(row9, col9).getValue();
+
+  var row10 = 8;
+  var col10 = 20;
+  var Year = ss.getRange(row10, col10).getValue();
+  
+  //Email template to HR and staff/supervisor
+
+  var message = {
+  to: "admin@alliessupportedemployment.com" + "," + StaffEmail + "," + SupervisorEmail,
+  subject: "Quarterly Review Form for " + StaffName + " " + Month + "/" + Day + "/" + Year,
+  body: "Hello " + StaffName + ",\n\nYour Quarterly Review Form is attached. It will be saved to your file in BambooHR for future reference." + " \n\nPlease reach out with any additional questions or concerns." + "\n\nThank you,\n\n" + SupervisorName,
+   // name: "ASE Management Team",
+    attachments: [SpreadsheetApp.getActiveSpreadsheet().getAs(MimeType.PDF).setName("Quarterly Review Form " + StaffName + " " + Month + "-" + Day + "-" + Year + ".pdf")],
+  }
+  
+  MailApp.sendEmail(message);
+
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Form Responses 1").activate();
+  
+};
